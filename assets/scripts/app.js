@@ -1,3 +1,12 @@
+class DOMHelper {
+    static moveElement(elementId, destinationSelector) {
+        const element = document.getElementById(elementId);
+        const destinationElement = document.querySelector(destinationSelector);
+        console.log(destinationElement);
+        destinationElement.append(element);
+    }
+}
+
 class ToolTip {}
 
 class ProjectItem {
@@ -21,6 +30,7 @@ class ProjectList {
     projects = [];
 
     constructor(type) {
+        this.type = type;
         const prjItems = document.querySelectorAll(`#${type}-projects li`);
         for (const prjItem of prjItems) {
             this.projects.push(new ProjectItem(prjItem.id, this.switchProject.bind(this)));
@@ -28,9 +38,8 @@ class ProjectList {
     }
 
     addProject(prjItem) {
-        console.log(this);
-        console.log(`Adding a new object`);
-        console.log(PrjItem);
+        this.projects.push(prjItem);
+        DOMHelper.moveElement(prjItem.id, `#${this.type}-projects ul`);
     }
 
     switchProject(prjId) {
