@@ -2,7 +2,6 @@ class DOMHelper {
     static moveElement(elementId, destinationSelector) {
         const element = document.getElementById(elementId);
         const destinationElement = document.querySelector(destinationSelector);
-        console.log(destinationElement);
         destinationElement.append(element);
     }
 }
@@ -10,19 +9,25 @@ class DOMHelper {
 class ToolTip {}
 
 class ProjectItem {
-    constructor(id, switchProjectFunction) {
+    constructor(id, switchProjectFunction, type) {
         this.id = id;
         this.switchProjectHandler = switchProjectFunction;
         this.connectMoreInfoButton();
-        this.connectSwitchButton();
+        this.connectSwitchButton(type);
     }
 
     connectMoreInfoButton() {}
 
-    connectSwitchButton() {
+    connectSwitchButton(type) {
         const prjItemEl = document.getElementById(this.id);
         const switchBtn = prjItemEl.querySelector('button:last-child');
+        switchBtn.textContent = type === 'active' ? 'Finished' : 'Active';
         switchBtn.addEventListener('click', this.switchProjectHandler.bind(null, this.id));
+    }
+
+    update(switchProjectFunction, type) {
+        this.switchProjectHandler = switchProjectFunction;
+        this.connectSwitchButton(type);
     }
 }
 
@@ -33,13 +38,16 @@ class ProjectList {
         this.type = type;
         const prjItems = document.querySelectorAll(`#${type}-projects li`);
         for (const prjItem of prjItems) {
-            this.projects.push(new ProjectItem(prjItem.id, this.switchProject.bind(this)));
+            this.projects.push(
+                new ProjectItem(prjItem.id, this.switchProject.bind(this), this.type),
+            );
         }
     }
 
-    addProject(prjItem) {
-        this.projects.push(prjItem);
-        DOMHelper.moveElement(prjItem.id, `#${this.type}-projects ul`);
+    addProject(project) {
+        this.projects.push(project);
+        DOMHelper.moveElement(project.id, `#${this.type}-projects ul`);
+        project.update(this.switchProject.bind(this), this.type);
     }
 
     switchProject(prjId) {
