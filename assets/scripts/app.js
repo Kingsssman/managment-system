@@ -9,18 +9,25 @@ class DOMHelper {
         const element = document.getElementById(elementId);
         const destinationElement = document.querySelector(destinationSelector);
         destinationElement.append(element);
+        element.scrollIntoView({ behavior: 'smooth' });
     }
 }
 
 class ToolTip {
+    constructor(closeNotifierFunction, text) {
+        this.text = text;
+        this.closeNotifierFunction = closeNotifierFunction;
+    }
+
     remove = () => {
         this.element.remove();
+        this.closeNotifierFunction();
     };
 
     show() {
         const infoEl = document.createElement('div');
         infoEl.className = 'card';
-        infoEl.textContent = 'More info about this task';
+        infoEl.textContent = this.text;
         this.element = infoEl;
         infoEl.addEventListener('click', this.remove);
         document.body.appendChild(infoEl);
@@ -28,23 +35,31 @@ class ToolTip {
 }
 
 class ProjectItem {
+    isActiveToolTip = false;
+
     constructor(id, switchProjectFunction, type) {
         this.id = id;
         this.switchProjectHandler = switchProjectFunction;
         this.connectMoreInfoButton();
         this.connectSwitchButton(type);
+        console.log(this);
     }
 
     showMoreInfoHandler() {
-        const tooltip = new ToolTip();
-        console.log(tooltip);
+        if (this.isActiveToolTip) return;
+        const projectItem = document.getElementById(this.id);
+        const textMessage = projectItem.dataset.extraInfo;
+        const tooltip = new ToolTip(() => {
+            this.isActiveToolTip = false;
+        }, textMessage);
         tooltip.show();
+        this.isActiveToolTip = true;
     }
 
     connectMoreInfoButton() {
         const prjItemEl = document.getElementById(this.id);
         const moreBtn = prjItemEl.querySelector('button:first-of-type');
-        moreBtn.addEventListener('click', this.showMoreInfoHandler);
+        moreBtn.addEventListener('click', this.showMoreInfoHandler.bind(this));
     }
 
     connectSwitchButton(type) {
