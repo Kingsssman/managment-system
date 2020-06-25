@@ -12,7 +12,20 @@ class DOMHelper {
     }
 }
 
-class ToolTip {}
+class ToolTip {
+    remove = () => {
+        this.element.remove();
+    };
+
+    show() {
+        const infoEl = document.createElement('div');
+        infoEl.className = 'card';
+        infoEl.textContent = 'More info about this task';
+        this.element = infoEl;
+        infoEl.addEventListener('click', this.remove);
+        document.body.appendChild(infoEl);
+    }
+}
 
 class ProjectItem {
     constructor(id, switchProjectFunction, type) {
@@ -22,13 +35,23 @@ class ProjectItem {
         this.connectSwitchButton(type);
     }
 
-    connectMoreInfoButton() {}
+    showMoreInfoHandler() {
+        const tooltip = new ToolTip();
+        console.log(tooltip);
+        tooltip.show();
+    }
+
+    connectMoreInfoButton() {
+        const prjItemEl = document.getElementById(this.id);
+        const moreBtn = prjItemEl.querySelector('button:first-of-type');
+        moreBtn.addEventListener('click', this.showMoreInfoHandler);
+    }
 
     connectSwitchButton(type) {
         const prjItemEl = document.getElementById(this.id);
-        let switchBtn = prjItemEl.querySelector('button:last-child');
+        let switchBtn = prjItemEl.querySelector('button:last-of-type');
         switchBtn = DOMHelper.clearEventListeners(switchBtn);
-        switchBtn.textContent = type === 'active' ? 'Finished' : 'Active';
+        switchBtn.textContent = type === 'active' ? 'Finish' : 'Active';
         switchBtn.addEventListener('click', this.switchProjectHandler.bind(null, this.id));
     }
 
