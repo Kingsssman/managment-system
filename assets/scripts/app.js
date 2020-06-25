@@ -42,17 +42,20 @@ class ProjectItem {
         this.switchProjectHandler = switchProjectFunction;
         this.connectMoreInfoButton();
         this.connectSwitchButton(type);
-        console.log(this);
     }
 
     showMoreInfoHandler() {
         if (this.isActiveToolTip) return;
+
         const projectItem = document.getElementById(this.id);
         const textMessage = projectItem.dataset.extraInfo;
+
         const tooltip = new ToolTip(() => {
             this.isActiveToolTip = false;
         }, textMessage);
+
         tooltip.show();
+
         this.isActiveToolTip = true;
     }
 
@@ -113,6 +116,16 @@ class App {
             finishedProjects.addProject.bind(finishedProjects),
         );
         finishedProjects.setUpdateProjectsFunction(activeProjects.addProject.bind(activeProjects));
+
+        const analyticsBtn = document.getElementById('start-analytics-btn');
+        analyticsBtn.addEventListener('click', this.startAnalytics);
+    }
+
+    static startAnalytics() {
+        const analyticsScript = document.createElement('script');
+        analyticsScript.src = 'assets/scripts/analytics.js';
+        analyticsScript.defer = true;
+        document.head.append(analyticsScript);
     }
 }
 
