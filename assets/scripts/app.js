@@ -1,4 +1,10 @@
 class DOMHelper {
+    static clearEventListeners(element) {
+        const clonedElement = element.cloneNode(true);
+        element.replaceWith(clonedElement);
+        return clonedElement;
+    }
+
     static moveElement(elementId, destinationSelector) {
         const element = document.getElementById(elementId);
         const destinationElement = document.querySelector(destinationSelector);
@@ -20,7 +26,8 @@ class ProjectItem {
 
     connectSwitchButton(type) {
         const prjItemEl = document.getElementById(this.id);
-        const switchBtn = prjItemEl.querySelector('button:last-child');
+        let switchBtn = prjItemEl.querySelector('button:last-child');
+        switchBtn = DOMHelper.clearEventListeners(switchBtn);
         switchBtn.textContent = type === 'active' ? 'Finished' : 'Active';
         switchBtn.addEventListener('click', this.switchProjectHandler.bind(null, this.id));
     }
